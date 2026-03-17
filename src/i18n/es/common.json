@@ -1,0 +1,12 @@
+{
+  "SUCCESS": "Operación exitosa",
+  "ERROR": "Ha ocurrido un error inesperado",
+  "VALIDATION_ERROR": "Error de validación",
+  "auth": {
+    "EMAIL_ALREADY_REGISTERED": "El correo electrónico ya está registrado",
+    "INVALID_CREDENTIALS": "Credenciales inválidas",
+    "USER_NOT_FOUND": "Usuario no encontrado o inactivo",
+    "REGISTER_SUCCESS": "Usuario registrado exitosamente",
+    "LOGIN_SUCCESS": "Sesión iniciada exitosamente"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "SUCCESS": "Operation successful",
+  "ERROR": "An unexpected error occurred",
+  "VALIDATION_ERROR": "Validation error",
+  "auth": {
+    "EMAIL_ALREADY_REGISTERED": "Email is already registered",
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "USER_NOT_FOUND": "User found or inactive",
+    "REGISTER_SUCCESS": "User registered successfully",
+    "LOGIN_SUCCESS": "Login successful"
+  }
+}
