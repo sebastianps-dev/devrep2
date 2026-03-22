@@ -24,7 +24,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const exceptionResponse: any =
       exception instanceof HttpException
         ? exception.getResponse()
-        : { message: 'common.ERROR' };
+        : { message: exception.message || 'common.ERROR' };
 
     // Intentar traducir el mensaje del error
     let message = exceptionResponse.message || exceptionResponse;

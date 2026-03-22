@@ -56,11 +56,11 @@ export class PropertiesController {
     @ActiveUser() user: User,
     @UploadedFile() image?: Express.Multer.File
   ) {
-    return this.propertiesService.update(id, updatePropertyDto, user.id, image);
+    return this.propertiesService.update(id, updatePropertyDto, user, image);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @ActiveUser() user: User) {
-    return this.propertiesService.remove(id, user.id);
+    return this.propertiesService.remove(id, user);
   }
 }

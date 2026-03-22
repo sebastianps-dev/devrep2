@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 import { Property } from './entities/property.entity';
 import { PropertyStatus } from './enums/property.enums';
@@ -37,11 +37,12 @@ export class PropertiesService {
     return property;
   }
 
-  async update(id: string, updatePropertyDto: UpdatePropertyDto, userId: string, image?: Express.Multer.File): Promise<Property> {
+  async update(id: string, updatePropertyDto: UpdatePropertyDto, user: User, image?: Express.Multer.File): Promise<Property> {
     const property = await this.findOne(id);
 
-    if (property.agentId !== userId) {
-      throw new Error('You do not have permission to edit this property');
+    // Permitir si es el dueño, Admin o Agente
+    if (property.agentId !== user.id && user.role !== 'Admin' && user.role !== 'Agente') {
+      throw new ForbiddenException(`No tienes permiso para editar esta propiedad. Tu rol: ${user.role}`);
     }
 
     if (image) {
@@ -52,11 +53,12 @@ export class PropertiesService {
     return this.propertyRepository.update(id, updatePropertyDto);
   }
 
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(id: string, user: User): Promise<void> {
     const property = await this.findOne(id);
     
-    if (property.agentId !== userId) {
-      throw new Error('You do not have permission to delete this property');
+    // Permitir si es el dueño, Admin o Agente
+    if (property.agentId !== user.id && user.role !== 'Admin' && user.role !== 'Agente') {
+      throw new ForbiddenException(`No tienes permiso para eliminar esta propiedad. Tu rol: ${user.role}`);
     }
 
     await this.propertyRepository.remove(property);

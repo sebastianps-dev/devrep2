@@ -1,4 +1,5 @@
 import { IsString, IsEnum, IsNumber, IsOptional, IsBoolean, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
 import { PropertyType, OperationType, PropertyStatus } from '../enums/property.enums';
 
 export class CreatePropertyDto {
@@ -12,10 +13,12 @@ export class CreatePropertyDto {
   operation: OperationType;
 
   @IsNumber()
+  @Type(() => Number)
   price: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   rentPrice?: number;
 
   @IsString()
@@ -27,6 +30,7 @@ export class CreatePropertyDto {
 
   @IsUrl()
   @IsOptional()
+  @IsString()
   image?: string;
 
   @IsBoolean()
@@ -63,22 +67,27 @@ export class CreatePropertyDto {
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   totalArea?: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   builtArea?: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   bedrooms?: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   bathrooms?: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   parkingSpaces?: number;
 
   @IsOptional()

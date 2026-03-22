@@ -3,6 +3,7 @@ export enum PropertyType {
   DEPARTAMENTO = 'Departamento',
   LOCAL = 'Local Comercial',
   TERRENO = 'Terreno',
+  OFICINA = 'Oficina',
 }
 
 export enum OperationType {
