@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsNumber, IsOptional, IsBoolean, IsUrl } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsOptional, IsBoolean, IsUrl, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PropertyType, OperationType, PropertyStatus } from '../enums/property.enums';
 
@@ -36,6 +36,16 @@ export class UpdatePropertyDto {
   @IsUrl()
   @IsOptional()
   image?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  documents?: string[];
 
   @IsBoolean()
   @IsOptional()

@@ -9,9 +9,10 @@ import {
   UseGuards, 
   Query,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  UploadedFiles
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -26,13 +27,17 @@ export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'image', maxCount: 1 },
+    { name: 'images', maxCount: 10 },
+    { name: 'documents', maxCount: 10 }
+  ]))
   create(
     @Body() createPropertyDto: CreatePropertyDto, 
     @ActiveUser() user: User,
-    @UploadedFile() image?: Express.Multer.File
+    @UploadedFiles() files?: { image?: Express.Multer.File[], images?: Express.Multer.File[], documents?: Express.Multer.File[] }
   ) {
-    return this.propertiesService.create(createPropertyDto, user, image);
+    return this.propertiesService.create(createPropertyDto, user, files);
   }
 
   @Get()
@@ -49,14 +54,18 @@ export class PropertiesController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'image', maxCount: 1 },
+    { name: 'images', maxCount: 10 },
+    { name: 'documents', maxCount: 10 }
+  ]))
   update(
     @Param('id') id: string, 
     @Body() updatePropertyDto: UpdatePropertyDto,
     @ActiveUser() user: User,
-    @UploadedFile() image?: Express.Multer.File
+    @UploadedFiles() files?: { image?: Express.Multer.File[], images?: Express.Multer.File[], documents?: Express.Multer.File[] }
   ) {
-    return this.propertiesService.update(id, updatePropertyDto, user, image);
+    return this.propertiesService.update(id, updatePropertyDto, user, files);
   }
 
   @Delete(':id')

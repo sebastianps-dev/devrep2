@@ -15,11 +15,30 @@ export class PropertiesService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createPropertyDto: CreatePropertyDto, user: User, image?: Express.Multer.File): Promise<Property> {
-    if (image) {
-      const upload = await this.cloudinaryService.uploadImage(image);
+  async create(
+    createPropertyDto: CreatePropertyDto, 
+    user: User, 
+    files?: { image?: Express.Multer.File[], images?: Express.Multer.File[], documents?: Express.Multer.File[] }
+  ): Promise<Property> {
+    if (files?.image?.[0]) {
+      const upload = await this.cloudinaryService.uploadImage(files.image[0]);
       createPropertyDto.image = upload.secure_url;
     }
+
+    if (files?.images?.length) {
+      const uploadedImages = await Promise.all(
+        files.images.map(file => this.cloudinaryService.uploadImage(file))
+      );
+      createPropertyDto.images = uploadedImages.map(u => u.secure_url);
+    }
+
+    if (files?.documents?.length) {
+      const uploadedDocs = await Promise.all(
+        files.documents.map(file => this.cloudinaryService.uploadImage(file))
+      );
+      createPropertyDto.documents = uploadedDocs.map(u => u.secure_url);
+    }
+
     return this.propertyRepository.create(createPropertyDto, user.id);
   }
 
@@ -37,7 +56,12 @@ export class PropertiesService {
     return property;
   }
 
-  async update(id: string, updatePropertyDto: UpdatePropertyDto, user: User, image?: Express.Multer.File): Promise<Property> {
+  async update(
+    id: string, 
+    updatePropertyDto: UpdatePropertyDto, 
+    user: User, 
+    files?: { image?: Express.Multer.File[], images?: Express.Multer.File[], documents?: Express.Multer.File[] }
+  ): Promise<Property> {
     const property = await this.findOne(id);
 
     // Permitir si es el dueño, Admin o Agente
@@ -45,9 +69,27 @@ export class PropertiesService {
       throw new ForbiddenException(`No tienes permiso para editar esta propiedad. Tu rol: ${user.role}`);
     }
 
-    if (image) {
-      const upload = await this.cloudinaryService.uploadImage(image);
+    if (files?.image?.[0]) {
+      const upload = await this.cloudinaryService.uploadImage(files.image[0]);
       updatePropertyDto.image = upload.secure_url;
+    }
+
+    if (files?.images?.length) {
+      const uploadedImages = await Promise.all(
+        files.images.map(file => this.cloudinaryService.uploadImage(file))
+      );
+      updatePropertyDto.images = (typeof updatePropertyDto.images === 'string' 
+        ? [updatePropertyDto.images] 
+        : updatePropertyDto.images || property.images || []).concat(uploadedImages.map(u => u.secure_url));
+    }
+
+    if (files?.documents?.length) {
+      const uploadedDocs = await Promise.all(
+        files.documents.map(file => this.cloudinaryService.uploadImage(file))
+      );
+      updatePropertyDto.documents = (typeof updatePropertyDto.documents === 'string'
+        ? [updatePropertyDto.documents]
+        : updatePropertyDto.documents || property.documents || []).concat(uploadedDocs.map(u => u.secure_url));
     }
 
     return this.propertyRepository.update(id, updatePropertyDto);

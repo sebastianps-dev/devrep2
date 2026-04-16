@@ -45,6 +45,12 @@ export class Property extends BaseEntity {
   @Column({ nullable: true })
   image: string;
 
+  @Column('simple-json', { nullable: true })
+  images: string[];
+
+  @Column('simple-json', { nullable: true })
+  documents: string[];
+
   @Column({ default: false })
   isFeatured: boolean;
 
