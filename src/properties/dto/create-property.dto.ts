@@ -93,6 +93,16 @@ export class CreatePropertyDto {
   @IsOptional()
   amenities?: string[];
 
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  halfBathrooms?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  constructionYear?: number;
+
   @IsString()
   @IsOptional()
   contactName?: string;

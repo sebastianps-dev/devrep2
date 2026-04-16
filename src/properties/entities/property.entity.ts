@@ -81,6 +81,12 @@ export class Property extends BaseEntity {
   @Column('simple-json', { nullable: true })
   amenities: string[];
 
+  @Column({ type: 'int', nullable: true })
+  halfBathrooms: number;
+
+  @Column({ type: 'int', nullable: true })
+  constructionYear: number;
+
   @Column({ nullable: true })
   contactName: string;
 
