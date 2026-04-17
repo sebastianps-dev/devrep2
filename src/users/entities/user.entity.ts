@@ -24,4 +24,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Property, (property) => property.agent)
   properties: Property[];
+
+  @Column({ nullable: true })
+  tenantId: string;
 }

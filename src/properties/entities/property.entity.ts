@@ -114,4 +114,7 @@ export class Property extends BaseEntity {
 
   @Column()
   agentId: string;
+
+  @Column({ nullable: true })
+  tenantId: string;
 }

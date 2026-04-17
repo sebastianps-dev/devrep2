@@ -10,6 +10,7 @@ import { PropertyType, OperationType, PropertyStatus } from '../properties/enums
 import { LeadSource, LeadStatus } from '../leads/enums/lead.enums';
 import { EventType } from '../agenda/enums/event-type.enum';
 import { NotePriority } from '../notes/enums/note-priority.enum';
+import { Tenant } from '../tenants/entities/tenant.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -27,17 +28,22 @@ export class SeedService {
     private readonly eventRepository: Repository<Event>,
     @InjectRepository(Note)
     private readonly noteRepository: Repository<Note>,
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
   ) {}
 
   async runSeed() {
     this.logger.log('Starting database seed...');
 
     try {
+      // 0. Create Tenant (Inmobiliaria)
+      const tenant = await this.seedTenants();
+
       // 1. Create Agents
-      const agents = await this.seedUsers();
+      const agents = await this.seedUsers(tenant);
       
       // 2. Create Properties
-      const properties = await this.seedProperties(agents);
+      const properties = await this.seedProperties(agents, tenant);
 
       // 3. Create Leads
       const leads = await this.seedLeads(agents, properties);
@@ -56,7 +62,36 @@ export class SeedService {
     }
   }
 
-  private async seedUsers() {
+  private async seedTenants() {
+    const tenantData = {
+      name: 'MVCS Inmobiliaria',
+      subdomain: 'localhost',
+      logoUrl: 'https://cdn-icons-png.flaticon.com/512/1018/1018573.png',
+      primaryColor: '#0f5c4b',
+      welcomeTitle: 'Encuentra tu próximo hogar con la seguridad de un experto.',
+      welcomeSubtitle: 'Agente inmobiliario debidamente registrado ante el Ministerio de Vivienda (MVCS) para su total tranquilidad legal y financiera.',
+      contactEmail: 'info@mvcs-inmobiliaria.es',
+      contactPhone: '+34 900 123 456',
+      address: 'Calle Serrano 123, Salamanca, Madrid',
+      socialLinks: {
+        facebook: 'https://facebook.com',
+        instagram: 'https://instagram.com',
+        twitter: 'https://twitter.com'
+      }
+    };
+
+    let tenant = await this.tenantRepository.findOne({ where: { subdomain: tenantData.subdomain } });
+    if (!tenant) {
+      tenant = this.tenantRepository.create(tenantData);
+      tenant = await this.tenantRepository.save(tenant);
+      this.logger.log(`Created tenant: ${tenantData.name}`);
+    } else {
+      this.logger.log(`Tenant already exists: ${tenantData.name}`);
+    }
+    return tenant;
+  }
+
+  private async seedUsers(tenant: Tenant) {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     
     const usersData = [
@@ -66,6 +101,7 @@ export class SeedService {
         firstName: 'Admin',
         lastName: 'LJPP',
         role: 'Admin',
+        tenantId: tenant.id,
       },
       {
         email: 'agente1@ljpp.com',
@@ -73,6 +109,7 @@ export class SeedService {
         firstName: 'Juan',
         lastName: 'Pérez',
         role: 'Agente',
+        tenantId: tenant.id,
       },
       {
         email: 'agente2@ljpp.com',
@@ -80,6 +117,7 @@ export class SeedService {
         firstName: 'María',
         lastName: 'García',
         role: 'Agente',
+        tenantId: tenant.id,
       },
     ];
 
@@ -98,7 +136,7 @@ export class SeedService {
     return users;
   }
 
-  private async seedProperties(agents: User[]) {
+  private async seedProperties(agents: User[], tenant: Tenant) {
     const propertiesData = [
       {
         title: 'Apartamento Moderno en el Centro',
@@ -108,6 +146,7 @@ export class SeedService {
         zone: 'Centro',
         status: PropertyStatus.DISPONIBLE,
         agentId: agents[0]?.id,
+        tenantId: tenant.id,
         image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2070',
       },
       {
@@ -118,6 +157,7 @@ export class SeedService {
         zone: 'Norte',
         status: PropertyStatus.DISPONIBLE,
         agentId: agents[1]?.id || agents[0]?.id,
+        tenantId: tenant.id,
         image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=2070',
       },
       {
@@ -129,6 +169,7 @@ export class SeedService {
         zone: 'Sur',
         status: PropertyStatus.DISPONIBLE,
         agentId: agents[2]?.id || agents[0]?.id,
+        tenantId: tenant.id,
         image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2069',
       },
       {
@@ -139,6 +180,7 @@ export class SeedService {
         zone: 'Oeste',
         status: PropertyStatus.POR_LIBERARSE,
         agentId: agents[0]?.id,
+        tenantId: tenant.id,
         image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2070',
       },
     ];

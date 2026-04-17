@@ -22,6 +22,7 @@ import { ClosuresModule } from './closures/closures.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DatabaseSeedModule } from './database-seed/database-seed.module';
 import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
+import { TenantsModule } from './tenants/tenants.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
     DashboardModule,
     DatabaseSeedModule,
     CloudinaryModule,
+    TenantsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
