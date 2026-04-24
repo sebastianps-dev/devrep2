@@ -11,7 +11,10 @@ async function bootstrap() {
 
   const i18nService = app.get(I18nService) as any;
 
-  // Prefijo para la API
+  // Habilitar CORS de forma muy permisiva para depuración
+  app.enableCors();
+
+  // Configuración de prefijo global
   app.setGlobalPrefix('api/v1');
 
   // Configuración de validación global
@@ -28,13 +31,6 @@ async function bootstrap() {
 
   // Filtro para estandarizar respuestas de error
   app.useGlobalFilters(new AllExceptionsFilter(i18nService));
-
-  // Habilitar CORS explícitamente y de forma abierta
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Accept, Authorization, x-custom-lang, Accept-Language',
-  });
 
   // Escuchar en el puerto definido o en el 4000 por defecto
   const port = process.env.PORT || 4000;
