@@ -32,7 +32,7 @@ async function bootstrap() {
   // Habilitar CORS explícitamente y de forma abierta
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization, x-custom-lang, Accept-Language',
   });
 
