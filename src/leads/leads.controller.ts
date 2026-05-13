@@ -46,11 +46,11 @@ export class LeadsController {
     @Body() updateLeadDto: UpdateLeadDto,
     @ActiveUser() user: User
   ) {
-    return this.leadsService.update(id, updateLeadDto, user.id);
+    return this.leadsService.update(id, updateLeadDto, user);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @ActiveUser() user: User) {
-    return this.leadsService.remove(id, user.id);
+    return this.leadsService.remove(id, user);
   }
 }

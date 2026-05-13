@@ -4,6 +4,7 @@ import { LeadStatus } from './enums/lead.enums';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import type { ILeadsRepository } from './interfaces/leads-repository.interface';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class LeadsService {
@@ -28,21 +29,22 @@ export class LeadsService {
     return lead;
   }
 
-  async update(id: string, updateLeadDto: UpdateLeadDto, agentId: string): Promise<Lead> {
+  async update(id: string, updateLeadDto: UpdateLeadDto, user: User): Promise<Lead> {
     const lead = await this.findOne(id);
 
-    // Solo el agente asignado o un admin (simplificado)
-    if (lead.assignedAgentId !== agentId) {
+    // Permitir si es el agente asignado o es un administrador (Admin)
+    if (lead.assignedAgentId !== user.id && user.role !== 'Admin') {
        throw new Error('You do not have permission to edit this lead');
     }
 
     return this.leadsRepository.update(id, updateLeadDto);
   }
 
-  async remove(id: string, agentId: string): Promise<void> {
+  async remove(id: string, user: User): Promise<void> {
     const lead = await this.findOne(id);
     
-    if (lead.assignedAgentId !== agentId) {
+    // Permitir si es el agente asignado o es un administrador (Admin)
+    if (lead.assignedAgentId !== user.id && user.role !== 'Admin') {
       throw new Error('You do not have permission to delete this lead');
     }
 
